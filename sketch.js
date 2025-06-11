@@ -84,31 +84,23 @@ function drawMole() {
   ellipse(hole.x - moleSize / 5, bodyY - moleSize / 8, moleSize / 10, moleSize / 10);
   ellipse(hole.x + moleSize / 5, bodyY - moleSize / 8, moleSize / 10, moleSize / 10);
 
-  // Eyebrows
-  stroke(0);
-  strokeWeight(2);
-  noFill();
-  arc(hole.x - moleSize / 5, bodyY - moleSize / 6, moleSize / 8, moleSize / 12, PI, 0);
-  arc(hole.x + moleSize / 5, bodyY - moleSize / 6, moleSize / 8, moleSize / 12, PI, 0);
-  noStroke();
+
 
   // Mouth
   fill(210, 180, 140); // Light brown
   let mouthY = bodyY + moleSize / 4;
   ellipse(hole.x, mouthY, moleSize / 2.8, moleSize / 8);
 
-  // Teeth
+  // Two Teeth
   fill(255);
-  let toothWidth = moleSize / 10;
+  let toothWidth = moleSize / 12;
   let toothHeight = moleSize / 7;
-  rect(hole.x - toothWidth / 2, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
+  let toothGap = toothWidth / 2;
 
-  // Whiskers
-  stroke(0);
-  strokeWeight(1);
-  line(hole.x - moleSize / 2.2, bodyY + moleSize / 12, hole.x - moleSize / 3, bodyY + moleSize / 12);
-  line(hole.x + moleSize / 2.2, bodyY + moleSize / 12, hole.x + moleSize / 3, bodyY + moleSize / 12);
-  noStroke();
+  rect(hole.x - toothGap - toothWidth / 2, mouthY + moleSize / 16, toothWidth, toothHeight, 2); // Left tooth
+  rect(hole.x + toothGap - toothWidth / 2, mouthY + moleSize / 16, toothWidth, toothHeight, 2); // Right tooth
+
+  
 }
 
 
