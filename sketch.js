@@ -46,21 +46,71 @@ function drawHoles() {
   }
 }
 
+// function drawMole() {
+//   let hole = holes[currentHole];
+//   let moleSize = min(width, height) / 9;
+  
+//   fill(139, 69, 19);
+//   ellipse(hole.x, hole.y - moleSize / 4, moleSize, moleSize); // Mole slightly above hole
+
+//   // Eyes
+//   fill(0);
+//   ellipse(hole.x - moleSize / 5, hole.y - moleSize / 4 - moleSize / 10, moleSize / 8, moleSize / 8);
+//   ellipse(hole.x + moleSize / 5, hole.y - moleSize / 4 - moleSize / 10, moleSize / 8, moleSize / 8);
+
+//   // Mouth
+//   ellipse(hole.x, hole.y - moleSize / 4 + moleSize / 8, moleSize / 4, moleSize / 10);
+// }
+
 function drawMole() {
   let hole = holes[currentHole];
   let moleSize = min(width, height) / 9;
-  
-  fill(139, 69, 19);
-  ellipse(hole.x, hole.y - moleSize / 4, moleSize, moleSize); // Mole slightly above hole
+  let bodyY = hole.y - moleSize / 4;
+
+  // Body (head)
+  fill(139, 69, 19); // Dark brown
+  ellipse(hole.x, bodyY, moleSize, moleSize); // Head
+
+  // Nose (snout)
+  fill(205, 133, 63); // Lighter brown for nose
+  ellipse(hole.x, bodyY + moleSize / 6, moleSize / 3.5, moleSize / 5);
+
+  // Nose tip
+  fill(255, 182, 193); // Pink
+  ellipse(hole.x, bodyY + moleSize / 6, moleSize / 12, moleSize / 12);
 
   // Eyes
   fill(0);
-  ellipse(hole.x - moleSize / 5, hole.y - moleSize / 4 - moleSize / 10, moleSize / 8, moleSize / 8);
-  ellipse(hole.x + moleSize / 5, hole.y - moleSize / 4 - moleSize / 10, moleSize / 8, moleSize / 8);
+  ellipse(hole.x - moleSize / 5, bodyY - moleSize / 8, moleSize / 10, moleSize / 10);
+  ellipse(hole.x + moleSize / 5, bodyY - moleSize / 8, moleSize / 10, moleSize / 10);
+
+  // Eyebrows
+  stroke(0);
+  strokeWeight(2);
+  noFill();
+  arc(hole.x - moleSize / 5, bodyY - moleSize / 6, moleSize / 8, moleSize / 12, PI, 0);
+  arc(hole.x + moleSize / 5, bodyY - moleSize / 6, moleSize / 8, moleSize / 12, PI, 0);
+  noStroke();
 
   // Mouth
-  ellipse(hole.x, hole.y - moleSize / 4 + moleSize / 8, moleSize / 4, moleSize / 10);
+  fill(210, 180, 140); // Light brown
+  let mouthY = bodyY + moleSize / 4;
+  ellipse(hole.x, mouthY, moleSize / 2.8, moleSize / 8);
+
+  // Teeth
+  fill(255);
+  let toothWidth = moleSize / 10;
+  let toothHeight = moleSize / 7;
+  rect(hole.x - toothWidth / 2, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
+
+  // Whiskers
+  stroke(0);
+  strokeWeight(1);
+  line(hole.x - moleSize / 2.2, bodyY + moleSize / 12, hole.x - moleSize / 3, bodyY + moleSize / 12);
+  line(hole.x + moleSize / 2.2, bodyY + moleSize / 12, hole.x + moleSize / 3, bodyY + moleSize / 12);
+  noStroke();
 }
+
 
 function mousePressed() {
   if (!moleVisible) return;
