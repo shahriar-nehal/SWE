@@ -6,6 +6,7 @@ let moleTimer;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  cursor('images/hammer2.svg', 0, 0);
   createHoles();
 
   moveMole();
@@ -68,8 +69,13 @@ function drawMole() {
   let bodyY = hole.y - moleSize / 4;
 
   // Body (head)
+   stroke(90, 40, 10); // dark outline
+  strokeWeight(2);
   fill(139, 69, 19); // Dark brown
-  ellipse(hole.x, bodyY, moleSize, moleSize); // Head
+  ellipse(hole.x, bodyY, moleSize, moleSize);
+
+  // All other features – no outline
+  noStroke();
 
   // Nose (snout)
   fill(205, 133, 63); // Lighter brown for nose
@@ -91,14 +97,14 @@ function drawMole() {
   let mouthY = bodyY + moleSize / 4;
   ellipse(hole.x, mouthY, moleSize / 2.8, moleSize / 8);
 
-  // Two Teeth
-  fill(255);
-  let toothWidth = moleSize / 12;
-  let toothHeight = moleSize / 7;
-  let toothGap = toothWidth / 2;
+  //two tooth
+ fill(255);
+  let toothWidth = moleSize / 20;
+  let toothHeight = moleSize / 10;
+  let toothGap = toothWidth * 1.5;
 
-  rect(hole.x - toothGap - toothWidth / 2, mouthY + moleSize / 16, toothWidth, toothHeight, 2); // Left tooth
-  rect(hole.x + toothGap - toothWidth / 2, mouthY + moleSize / 16, toothWidth, toothHeight, 2); // Right tooth
+  rect(hole.x - toothGap, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
+  rect(hole.x + toothGap - toothWidth, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
 
   
 }
