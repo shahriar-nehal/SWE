@@ -6,7 +6,7 @@ let moleTimer;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  cursor('images/hammer2.svg', 0, 0);
+  cursor('images/hammer2.png', 0, 0);
   createHoles();
 
   moveMole();

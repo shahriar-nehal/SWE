@@ -1,7 +1,7 @@
 html, body {
   margin: 5;
   padding: 2;
-  cursor: url('images/hammer2.svg') 0 0, auto;
+  cursor: url('images/hammer2.png') 0 0, auto;
 }
 
 canvas {
