@@ -23,12 +23,35 @@ function setup() {
 
 
 function draw() {
-  background(180, 220, 150);
+  drawGrassBackground();
   drawHoles();
   if (moleVisible) drawMole();
   displayScore();
 
-  // Update hammer swing
+  function drawGrassBackground() {
+  // background(107, 142, 35); // A flat olive green for grass
+
+  // Optional: subtle, gently swaying grass strands
+  background(120, 160, 90);
+
+
+  // Draw longer grass blades
+ stroke(30, 100, 40);
+strokeWeight(2);
+for (let i = 0; i < width; i += 8) {
+  let y1 = height;
+  let sway = sin(frameCount * 0.02 + i * 0.1) * 3; // faster sway
+  let baseHeight = 40; // base grass height
+  let heightVariation = sin(i * 0.1) * 4; // subtle, fixed variation
+  let y2 = height - baseHeight + heightVariation + sin(frameCount * 0.01 + i * 0.05) * 2; // faster wave
+  line(i, y1, i + sway, y2);
+}
+
+}
+
+
+
+  // hammer swing
   if (hammerSwinging) {
     hammerAngle *= 0.85; // gradually reduce the angle
     if (abs(hammerAngle) < 0.01) {
@@ -70,30 +93,31 @@ function createHoles() {
 
 function drawHoles() {
   for (let hole of holes) {
-    let w = width / 8;
-    let h = height / 12;
+    // Increase the size by scaling up the width and height
+    let w = width / 6;   // increased from width/8
+    let h = height / 9;  // increased from height/12
 
-    // Outer dirt ring
     noStroke();
-    fill(121, 85, 72);
-    ellipse(hole.x, hole.y, w * 1.2, h * 1.2);
 
-    // Main hole
-    fill(77, 51, 36);
+    // Main hole with darker color
+    fill(50, 35, 25); // darker brown than before (was 77, 51, 36)
     ellipse(hole.x, hole.y, w, h);
 
-    // Multiple layers of inner shadow for gradient depth
+    // Multiple layers of inner shadow for gradient depth (you can keep or tweak)
     for (let i = 0; i < 5; i++) {
-      fill(55, 34, 24, 50 - i * 8);
-      ellipse(hole.x, hole.y + h * 0.08 + i * 2, w * (0.65 - i * 0.05), h * (0.4 - i * 0.04));
-    }
+  fill(20, 10, 5, 100 - i * 15);  // darker and stronger shadow
+  ellipse(hole.x, hole.y + h * 0.08 + i * 2, w * (0.65 - i * 0.05), h * (0.4 - i * 0.04));
+   }
 
-    // Pebbles or dirt chunks around
+
+    // Pebbles or dirt chunks around (adjusted size to fit bigger hole)
     fill(100, 70, 50);
-    ellipse(hole.x + w * 0.4, hole.y + h * 0.3, w * 0.08, h * 0.05);
-    ellipse(hole.x - w * 0.35, hole.y - h * 0.2, w * 0.05, h * 0.03);
+    ellipse(hole.x + w * 0.4, hole.y + h * 0.3, w * 0.1, h * 0.07);
+    ellipse(hole.x - w * 0.35, hole.y - h * 0.2, w * 0.07, h * 0.04);
   }
 }
+
+
 
 
 // function drawMole() {
@@ -170,7 +194,7 @@ ellipse(hole.x + earOffsetX, earY, innerEarSize, innerEarSize); // right inner
   //two tooth
  fill(255);
   let toothWidth = moleSize / 28;
-  let toothHeight = moleSize / 24;
+  let toothHeight = moleSize / 28;
   let toothGap = toothWidth * 1.2;
 
   rect(hole.x - toothGap, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
@@ -202,7 +226,43 @@ function moveMole() {
 }
 
 function displayScore() {
-  fill(0);
-  textSize(min(width, height) / 25);
-  text('Score: ' + score, 10, min(width, height) / 20 + 10);
+  let fontSize = min(width, height) / 20;
+  let padding = 30;
+  let boardWidth = 250;
+  let boardHeight = fontSize + padding * 1.2;
+
+  // Hanging point
+  let hookX = 135;
+  let hookY = 20;
+
+  // Rope lines
+  stroke(100);
+  strokeWeight(3);
+  line(hookX, hookY, 30, 40);
+  line(hookX, hookY, boardWidth - 30, 40);
+
+  // Wooden board
+  push();
+  translate(10, 40);
+  noStroke();
+  fill(139, 69, 19); // Wood brown
+  rect(0, 0, boardWidth, boardHeight, 12);
+
+  // Wood grain
+  stroke(160, 82, 45);
+  strokeWeight(1);
+
+  // Metal nail heads
+  noStroke();
+  fill(80);
+  ellipse(10, 10, 8);
+  ellipse(boardWidth - 10, 10, 8);
+
+  // Score text
+  fill(255, 255, 210);
+  textSize(fontSize);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  text('Score: ' + score, boardWidth / 2, boardHeight / 2);
+  pop();
 }
