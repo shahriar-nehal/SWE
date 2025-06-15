@@ -1,9 +1,12 @@
 html, body {
-  margin: 5;
-  padding: 2;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   cursor: url('images/hammer2.png') 0 0, auto;
 }
 
 canvas {
   display: block;
+  max-width: 100%;
+  height: auto;
 }
