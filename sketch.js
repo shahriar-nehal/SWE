@@ -12,6 +12,10 @@ let gameStarted = false;
 let gameOver = false;
 let timerInterval;
 
+let isBombMole = false; // true if the current mole is a bomb
+let bombMoleChance = 0.2; // 20% chance the mole is a bomb
+
+
 function preload() {
   hammerImg = loadImage('images/hammer2.png'); // Load hammer PNG
 }
@@ -152,7 +156,7 @@ function drawMole() {
 
   stroke(90, 40, 10);
   strokeWeight(2);
-  fill(139, 69, 19);
+  fill(isBombMole ? color(200, 0, 0) : color(139, 69, 19));
   ellipse(hole.x, bodyY, moleSize, moleSize);
 
   let earSize = moleSize / 4;
@@ -161,17 +165,17 @@ function drawMole() {
 
   stroke(90, 40, 10);
   strokeWeight(1.5);
-  fill(139, 69, 19);
+  fill(isBombMole ? color(180, 0, 0) : color(139, 69, 19));
   ellipse(hole.x - earOffsetX, earY, earSize, earSize);
   ellipse(hole.x + earOffsetX, earY, earSize, earSize);
 
   noStroke();
-  fill(205, 133, 63);
+  fill(isBombMole ? color(255, 255, 255) : color(205, 133, 63));
   let innerEarSize = earSize / 3;
   ellipse(hole.x - earOffsetX, earY, innerEarSize, innerEarSize);
   ellipse(hole.x + earOffsetX, earY, innerEarSize, innerEarSize);
 
-  fill(205, 133, 63);
+  fill(isBombMole ? color(0) : color(205, 133, 63));
   ellipse(hole.x, bodyY + moleSize / 6, moleSize / 3.5, moleSize / 5);
 
   fill(255, 182, 193);
@@ -201,15 +205,24 @@ function mousePressed() {
   let hitRadius = moleSize / 2 * 2.5;
   let d = dist(mouseX, mouseY, hole.x, hole.y - moleSize / 4);
   if (d < hitRadius) {
-    score++;
-    moleVisible = false;
     hammerAngle = PI / 6;
     hammerSwinging = true;
-    updateScoreDisplay();
+
+    if (isBombMole) {
+      moleVisible = false;
+      endGame(); // instantly end game
+      alert('You hit a bomb! Game Over.');
+    } else {
+      score++;
+      moleVisible = false;
+      updateScoreDisplay();
+    }
   }
 }
+
 
 function moveMole() {
   currentHole = floor(random(holes.length));
   moleVisible = true;
+  isBombMole = random() < bombMoleChance; // 20% chance
 }
