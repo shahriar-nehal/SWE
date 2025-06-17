@@ -36,6 +36,7 @@ function startGame() {
   timeLeft = 30;
   updateScoreDisplay();
   updateTimerDisplay();
+  updateTimeBar();
 
   moveMole();
   moleTimer = setInterval(moveMole, 1000);
@@ -43,6 +44,7 @@ function startGame() {
   timerInterval = setInterval(() => {
     timeLeft--;
     updateTimerDisplay();
+    updateTimeBar();
     if (timeLeft <= 0) {
       endGame();
     }
@@ -55,6 +57,7 @@ function endGame() {
   moleVisible = false;
   gameOver = true;
   updateTimerDisplay();
+  updateTimeBar();
   alert('Game Over! Final Score: ' + score);
 }
 
@@ -212,4 +215,20 @@ function mousePressed() {
 function moveMole() {
   currentHole = floor(random(holes.length));
   moleVisible = true;
+}
+
+function updateTimeBar() {
+  let percentage = (timeLeft / 30) * 100;
+  const bar = document.getElementById('timeBar');
+  bar.style.width = percentage + '%';
+  bar.setAttribute('aria-valuenow', percentage);
+
+  // Color transitions based on remaining time
+  if (percentage > 60) {
+    bar.className = 'progress-bar progress-bar-striped bg-success';
+  } else if (percentage > 30) {
+    bar.className = 'progress-bar progress-bar-striped bg-warning';
+  } else {
+    bar.className = 'progress-bar progress-bar-striped bg-danger';
+  }
 }
