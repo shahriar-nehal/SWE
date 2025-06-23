@@ -43,6 +43,9 @@ function startGame() {
   updateTimerDisplay();
   updateTimeBar();
 
+  const startButton = document.getElementById('startButton');
+  startButton.disabled = true; // briefly disable to prevent double click
+
   moveMole();
   moleTimer = setInterval(moveMole, 1000);
 
@@ -54,6 +57,10 @@ function startGame() {
       endGame();
     }
   }, 1000);
+
+  setTimeout(() => {
+    startButton.disabled = false;
+  }, 1000); // re-enable after short delay
 }
 
 function endGame() {
@@ -61,8 +68,12 @@ function endGame() {
   clearInterval(timerInterval);
   moleVisible = false;
   gameOver = true;
+  gameStarted = false;
   updateTimerDisplay();
   updateTimeBar();
+
+  const startButton = document.getElementById('startButton');
+  startButton.textContent = 'Restart Game'; // Change button text
   alert('Game Over! Final Score: ' + score);
 }
 
