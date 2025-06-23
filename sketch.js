@@ -98,7 +98,7 @@ function draw() {
 
   // hammer swing
   if (hammerSwinging) {
-    hammerAngle *= 0.85;
+    hammerAngle *= 0.9;
     if (abs(hammerAngle) < 0.01) {
       hammerAngle = 0;
       hammerSwinging = false;
@@ -229,13 +229,13 @@ function mousePressed() {
   if (d < hitRadius) {
     score++;
     moleVisible = false;
-    hammerAngle = PI / 6;
+    hammerAngle = PI / 3;
     hammerSwinging = true;
     hitSound.play();      // Play HIT sound
     updateScoreDisplay();
   } else {
     missSound.play();     // Play MISS sound
-    hammerAngle = PI / 6;
+    hammerAngle = PI / 3;
     hammerSwinging = true;
   }
 }
