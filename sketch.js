@@ -79,7 +79,8 @@ function endGame() {
 
   const startButton = document.getElementById('startButton');
   startButton.textContent = 'Restart Game';
-  alert('Game Over! Final Score: ' + score);
+  
+  showGameMessage(`Game Over! Final Score: ${score}`, 'alert-warning');
 }
 
 
@@ -258,5 +259,18 @@ function updateTimeBar() {
     bar.className = 'progress-bar progress-bar-striped bg-warning';
   } else {
     bar.className = 'progress-bar progress-bar-striped bg-danger';
+  }
+}
+
+function showGameMessage(message, alertClass = 'alert-info', duration = 5000) {
+  const messageDiv = document.getElementById('gameMessage');
+  messageDiv.className = `alert ${alertClass} mt-3`;
+  messageDiv.textContent = message;
+  messageDiv.classList.remove('d-none');
+
+  if (duration > 0) {
+    setTimeout(() => {
+      messageDiv.classList.add('d-none');
+    }, duration);
   }
 }
