@@ -12,8 +12,13 @@ let gameStarted = false;
 let gameOver = false;
 let timerInterval;
 
+let hitSound, missSound;
+
+
 function preload() {
   hammerImg = loadImage('images/hammer2.png'); // Load hammer PNG
+  hitSound = loadSound('sounds/hit.mp3');
+  missSound = loadSound('sounds/hit.mp3');
 }
 
 function setup() {
@@ -203,12 +208,18 @@ function mousePressed() {
   let moleSize = min(width, height) / 9;
   let hitRadius = moleSize / 2 * 2.5;
   let d = dist(mouseX, mouseY, hole.x, hole.y - moleSize / 4);
+  
   if (d < hitRadius) {
     score++;
     moleVisible = false;
     hammerAngle = PI / 6;
     hammerSwinging = true;
+    hitSound.play();      // Play HIT sound
     updateScoreDisplay();
+  } else {
+    missSound.play();     // Play MISS sound
+    hammerAngle = PI / 6;
+    hammerSwinging = true;
   }
 }
 
