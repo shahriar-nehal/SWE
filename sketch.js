@@ -19,6 +19,7 @@ function preload() {
   hammerImg = loadImage('images/hammer2.png'); // Load hammer PNG
   hitSound = loadSound('sounds/hit.mp3');
   missSound = loadSound('sounds/hit.mp3');
+  timeoutSound = loadSound('sounds/game-over.mp3'); // timeout sound
 }
 
 function setup() {
@@ -72,10 +73,15 @@ function endGame() {
   updateTimerDisplay();
   updateTimeBar();
 
+  if (timeoutSound && timeoutSound.isLoaded()) {
+    timeoutSound.play();
+  }
+
   const startButton = document.getElementById('startButton');
-  startButton.textContent = 'Restart Game'; // Change button text
+  startButton.textContent = 'Restart Game';
   alert('Game Over! Final Score: ' + score);
 }
+
 
 function updateScoreDisplay() {
   document.getElementById('scoreDisplay').textContent = 'Score: ' + score;
