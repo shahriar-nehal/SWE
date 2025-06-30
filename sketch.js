@@ -4,7 +4,7 @@ let moleVisible = false;
 let score = 0;
 let moleTimer;
 let hammerImg;
-let hammerAngle = 0;
+let hammerAngle = 19.6;
 let hammerSwinging = false;
 
 let timeLeft = 30;
@@ -12,25 +12,38 @@ let gameStarted = false;
 let gameOver = false;
 let timerInterval;
 
-let hitSound, missSound;
-
+let hitSound, missSound, timeoutSound;
 
 function preload() {
-  hammerImg = loadImage('images/hammer2.png'); // Load hammer PNG
+  hammerImg = loadImage('images/hammer2.png');
   hitSound = loadSound('sounds/hit.mp3');
   missSound = loadSound('sounds/hit.mp3');
-  timeoutSound = loadSound('sounds/game-over.mp3'); // timeout sound
+  timeoutSound = loadSound('sounds/game-over.mp3');
 }
 
 function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
-  canvas.parent(document.body); // attach canvas to body
+  canvas.parent(document.body);
 
   noCursor();
   createHoles();
 
   const startButton = document.getElementById('startButton');
-  startButton.addEventListener('click', startGame);
+  startButton.addEventListener('click', () => {
+    document.getElementById('customStartModal').style.display = 'none';
+    startGame();
+  });
+  document.getElementById('restartButton').addEventListener('click', () => {
+  document.getElementById('gameOverModal').style.display = 'none';
+  startGame();
+});
+
+
+  // Show modal at beginning
+  document.getElementById('customStartModal').style.display = 'flex';
+
+  updateScoreDisplay();
+  updateTimerDisplay();
 }
 
 function startGame() {
@@ -40,15 +53,13 @@ function startGame() {
   gameOver = false;
   score = 0;
   timeLeft = 30;
+
   updateScoreDisplay();
   updateTimerDisplay();
   updateTimeBar();
 
-  const startButton = document.getElementById('startButton');
-  startButton.disabled = true; // briefly disable to prevent double click
-
   moveMole();
-  moleTimer = setInterval(moveMole, 1000);
+  moleTimer = setInterval(moveMole, 2000);
 
   timerInterval = setInterval(() => {
     timeLeft--;
@@ -58,10 +69,6 @@ function startGame() {
       endGame();
     }
   }, 1000);
-
-  setTimeout(() => {
-    startButton.disabled = false;
-  }, 1000); // re-enable after short delay
 }
 
 function endGame() {
@@ -77,12 +84,10 @@ function endGame() {
     timeoutSound.play();
   }
 
-  const startButton = document.getElementById('startButton');
-  startButton.textContent = 'Restart Game';
-  
-  showGameMessage(`Game Over! Final Score: ${score}`, 'alert-warning');
+  // Show Game Over Modal
+  document.getElementById('finalScoreText').textContent = `Your score: ${score}`;
+  document.getElementById('gameOverModal').style.display = 'flex';
 }
-
 
 function updateScoreDisplay() {
   document.getElementById('scoreDisplay').textContent = 'Score: ' + score;
@@ -97,16 +102,16 @@ function draw() {
   drawHoles();
   if (moleVisible) drawMole();
 
-  // hammer swing
-  if (hammerSwinging) {
-    hammerAngle *= 0.9;
-    if (abs(hammerAngle) < 0.01) {
-      hammerAngle = 0;
-      hammerSwinging = false;
-    }
-  }
+if (hammerSwinging) {
+  let restAngle = 19.6;
+  hammerAngle += (restAngle - hammerAngle) * 0.95; // faster return
 
-  // Draw hammer at mouse position
+  if (abs(hammerAngle - restAngle) < 0.5) {
+    hammerAngle = restAngle;
+    hammerSwinging = false;
+  }
+}
+
   push();
   translate(mouseX, mouseY);
   rotate(hammerAngle);
@@ -118,7 +123,6 @@ function draw() {
 
 function drawGrassBackground() {
   background(120, 160, 90);
-
   stroke(30, 100, 40);
   strokeWeight(2);
   for (let i = 0; i < width; i += 8) {
@@ -140,7 +144,6 @@ function createHoles() {
   holes = [];
   let rows = 2;
   let cols = 3;
-
   let gapX = width / (cols + 1);
   let gapY = height / (rows + 1);
 
@@ -224,18 +227,18 @@ function mousePressed() {
 
   let hole = holes[currentHole];
   let moleSize = min(width, height) / 9;
-  let hitRadius = moleSize / 2 * 2.5;
+  let hitRadius = moleSize * 1.25;
   let d = dist(mouseX, mouseY, hole.x, hole.y - moleSize / 4);
-  
+
   if (d < hitRadius) {
     score++;
     moleVisible = false;
     hammerAngle = PI / 3;
     hammerSwinging = true;
-    hitSound.play();      // Play HIT sound
+    hitSound.play();
     updateScoreDisplay();
   } else {
-    missSound.play();     // Play MISS sound
+    missSound.play();
     hammerAngle = PI / 3;
     hammerSwinging = true;
   }
@@ -250,21 +253,18 @@ function updateTimeBar() {
   let percentage = (timeLeft / 30) * 100;
   const bar = document.getElementById('timeBar');
   bar.style.width = percentage + '%';
-  bar.setAttribute('aria-valuenow', percentage);
 
-  // Color transitions based on remaining time
   if (percentage > 60) {
-    bar.className = 'progress-bar progress-bar-striped bg-success';
+    bar.style.backgroundColor = '#053b12';
   } else if (percentage > 30) {
-    bar.className = 'progress-bar progress-bar-striped bg-warning';
+    bar.style.backgroundColor = '#ffc107';
   } else {
-    bar.className = 'progress-bar progress-bar-striped bg-danger';
+    bar.style.backgroundColor = '#dc3545';
   }
 }
 
-function showGameMessage(message, alertClass = 'alert-info', duration = 5000) {
+function showGameMessage(message, alertClass = '', duration = 5000) {
   const messageDiv = document.getElementById('gameMessage');
-  messageDiv.className = `alert ${alertClass} mt-3`;
   messageDiv.textContent = message;
   messageDiv.classList.remove('d-none');
 
