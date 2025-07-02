@@ -92,16 +92,4 @@ canvas {
 }
 
 /* === Optional Game Message === */
-.game-message {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 8px;
-  background-color: #ffc107;
-  color: #000;
-  z-index: 1001;
-}
+
