@@ -176,3 +176,14 @@ canvas {
 .credit-btn:hover {
   background-color: #0b5ed7;
 }
+
+.custom-modal-content p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.custom-modal-content h2 {
+  font-size: 1.8rem;
+  margin-top: 0;
+}
+
