@@ -56,18 +56,30 @@ canvas {
 }
 
 /* === Progress Bar (Top Center) === */
-.progress-bar-container {
+.top-panel {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
+  width: 100%;   /* <-- ensure the flex container takes full width */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1002;
+  color: white;
+  text-shadow: 0 0 5px rgba(0,0,0,0.7);
+}
+
+
+/* Keep existing progress bar styles, just remove position */
+.progress-bar-container {
   width: 80%;
   max-width: 800px;
   height: 24px;
   background-color: white;
   border-radius: 12px;
   overflow: hidden;
-  z-index: 1001;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -78,18 +90,31 @@ canvas {
   transition: width 0.3s ease, background-color 0.3s ease;
 }
 
-/* === Score Panel (Top Right) === */
-.score-panel {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  padding: 10px 20px;
-  border-radius: 12px;
-  background: transparent;
-  color: white;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-  z-index: 1002;
+#timerDisplay, #scoreDisplay {
+  text-align: center;
 }
+
+#timerDisplay {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFFFFF; /* bright amber */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(236, 157, 8, 0.829),
+               0 0 15px rgba(236, 157, 8, 0.5);
+}
+
+#scoreDisplay {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #FFFFFF; /* bright cyan */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(13, 202, 240, 0.8),
+               0 0 15px rgba(13, 202, 240, 0.5);
+}
+
+
 
 /* === Optional Game Message === */
 
@@ -135,32 +160,4 @@ canvas {
   color: black;
   text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
-/*.progress-bar-background {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  max-width: 800px;
-  height: 24px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  overflow: hidden;
-  z-index: 1000;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.progress-bar-container {
-  height: 100%;
-  width: 100%;
-  background-color: transparent;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  width: 100%;
-  background-color: #053b12;
-  transition: width 0.3s ease, background-color 0.3s ease;
-} */
 
