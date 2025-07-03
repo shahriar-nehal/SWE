@@ -184,7 +184,7 @@ function windowResized() {
 
 function createHoles() {
   holes = [];
-  let rows = 2;
+  let rows = 3;
   let cols = 3;
   let gapX = width / (cols + 1);
   let gapY = height / (rows + 1);
