@@ -32,7 +32,10 @@ const BOMB_MOLE = 3;
 
 function preload() {
   hammerImg = loadImage('images/hammer2.png');
-  hitSound = loadSound('sounds/hit.mp3');
+  hitSound = loadSound('sounds/floweyhitsound.mp3');
+  hitbonusSound = loadSound('sounds/bonus.mp3');
+  hitbombSound = loadSound('sounds/dead.mp3');
+  hitthiefSound = loadSound('sounds/woman-slap.mp3');
   missSound = loadSound('sounds/hit.mp3');
   timeoutSound = loadSound('sounds/game-over.mp3');
 }
@@ -408,16 +411,16 @@ function mousePressed() {
           break;
         case BONUS_MOLE:
           score += 3;
-          hitSound.play();
+          hitbonusSound.play();
           showGameMessage("+3 BONUS!", 'success', 1000);
           break;
         case THIEF_MOLE:
           score = max(0, score - 2);
-          missSound.play();
+          hitthiefSound.play();
           showGameMessage("-2 THIEF!", 'danger', 1000);
           break;
         case BOMB_MOLE:
-          missSound.play();
+          hitbombSound.play();
           showGameMessage("BOOM! Game Over", 'danger', 1000);
           endGame();
           return;
