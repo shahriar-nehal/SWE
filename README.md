@@ -5,16 +5,16 @@ Whack-a-Mole Extreme is an enhanced version of the classic arcade game with prog
 
 #### Features
 ##### Progressive Difficulty 
-Game gets harder as you score more points
-__Easy:__ 1 mole at a time (score < 10) <br>
-__Medium:__ 1-2 moles at a time (score ≥ 10)<br>
-__Hard:__ 2-3 moles at a time (score ≥ 25)
+Game gets harder as you score more points<br>
+* __Easy:__ 1 mole at a time (score < 10) <br>
+* __Medium:__ 1-2 moles at a time (score ≥ 10)<br>
+* __Hard:__ 2-3 moles at a time (score ≥ 25)
 
 ##### Special Moles
-__Normal Mole:__ +1 point <br>
-__Bonus Mole (green):__ +3 points<br>
-__Thief Mole (black):__ -2 points<br>
-__Bomb Mole (gold):__ Game over!
+* __Normal Mole:__ +1 point <br>
+* __Bonus Mole (green):__ +3 points<br>
+* __Thief Mole (black):__ -2 points<br>
+* __Bomb Mole (gold):__ Game over!
 
 ##### Visual Feedback
 Animated messages for special events
