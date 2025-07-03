@@ -1,51 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whack-a-Mole Game</title>
 
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <script src="libraries/p5.min.js"></script>
-    <script src="libraries/p5.sound.min.js"></script>
-    <script src="libraries/quicksettings.js"></script>
-    <script src="libraries/p5.gui.js"></script>
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack-a-Mole Game</title>
 
-  <body class="bg-success-subtle">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="libraries/p5.min.js"></script>
+  <script src="libraries/p5.sound.min.js"></script>
+  <script src="libraries/quicksettings.js"></script>
+  <script src="libraries/p5.gui.js"></script>
+</head>
 
-    <!-- Custom Modal -->
-   <div id="customStartModal" class="custom-modal">
-  <div class="custom-modal-content">
-    <h2>Whack-a-Mole!</h2>
-    <button id="startButton" class="start-btn">Start Game</button>
+<body class="bg-success-subtle">
+
+  <!-- Custom Modal -->
+  <div id="customStartModal" class="custom-modal">
+    <div class="custom-modal-content">
+      <h2>Whack-a-Mole!</h2>
+
+      <!-- Vertically stacked buttons -->
+      <div class="button-stack">
+        <button id="startButton" class="start-btn">Start Game</button>
+        <button id="creditButton" class="start-btn credit-btn">Credits</button>
+      </div>
+    </div>
   </div>
-</div>
 
-
-   <div id="gameOverModal" class="custom-modal" style="display: none;">
-  <div class="custom-modal-content">
-    <h2>Game Over!</h2>
-    <p id="finalScoreText">Your score: 0</p>
-    <button id="restartButton">Play Again</button>
+  <!-- Credit Modal -->
+  <div id="creditModal" class="custom-modal" style="display: none;">
+    <div class="custom-modal-content">
+      <span id="closeCreditModal"
+        style="position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer;">&times;</span>
+      <h2>Developer Credits</h2>
+      <p><strong>Developer:</strong> Hasan Shamim Shaon, Md. Asaf-uddowla Golap, Shahriar Rahman Khan, Afolabi Temilola
+      </p>
+      <p><strong>Game:</strong> Whack-a-Mole with Progressive Difficulty</p>
+      <p><strong>Year:</strong> 2025</p>
+      <p><strong>Tools:</strong> p5.js, HTML/CSS, JavaScript</p>
+      <button id="backToHomeButton" class="start-btn" style="margin-top: 1.5rem; background-color: #6c757d;">Back to
+        Home</button>
+    </div>
   </div>
-</div>
+
+
+  <div id="gameOverModal" class="custom-modal" style="display: none;">
+    <div class="custom-modal-content">
+      <h2>Game Over!</h2>
+      <p id="finalScoreText">Your score: 0</p>
+      <button id="restartButton">Play Again</button>
+    </div>
+  </div>
 
 
   <!-- Side Score & Timer -->
   <div class="top-panel">
-  <div id="timerDisplay" class="fw-bold">Time: 45s</div>
-  <div class="progress-bar-container">
-    <div id="timeBar" class="progress-bar-fill"></div>
+    <div id="timerDisplay" class="fw-bold">Time: 45s</div>
+    <div class="progress-bar-container">
+      <div id="timeBar" class="progress-bar-fill"></div>
+    </div>
+    <div id="scoreDisplay" class="fw-bold">Score: 0</div>
   </div>
-  <div id="scoreDisplay" class="fw-bold">Score: 0</div>
-</div>
 
 
 
-    <!-- Game Message -->
-    <div id="gameMessage" class="game-message d-none" role="alert"></div>
+  <!-- Game Message -->
+  <div id="gameMessage" class="game-message d-none" role="alert"></div>
 
-    <script src="sketch.js"></script>
-  </body>
+  <script src="sketch.js"></script>
+</body>
+
 </html>
