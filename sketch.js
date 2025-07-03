@@ -38,7 +38,7 @@ function preload() {
   hitthiefSound = loadSound('sounds/woman-slap.mp3');
   missSound = loadSound('sounds/hit.mp3');
   timeoutSound = loadSound('sounds/game-over.mp3');
-  backgroundMusic = loadSound('sounds/intro-music.mp3');
+  backgroundMusic = loadSound('sounds/intro-song.mp3');
 }
 
 function setup() {
