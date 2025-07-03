@@ -30,7 +30,7 @@
 
   <!-- Credit Modal -->
   <div id="creditModal" class="custom-modal" style="display: none;">
-    <div class="custom-modal-content" style="max-width: 500px; text-align: left;">
+    <div class="custom-modal-content" style="max-width: 500px; text-align: center;">
       <span id="closeCreditModal"
         style="position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer;">&times;</span>
       <h2 style="text-align: center; margin-bottom: 1rem;">Game Credits</h2>
@@ -55,7 +55,6 @@
 
       <p style="font-size: 0.9rem; text-align: center;">
         © 2025 Team Alpha. All rights reserved.<br>
-        Unauthorized copying, distribution, or modification of this game is prohibited.
       </p>
 
       <div style="text-align: center;">
@@ -73,6 +72,7 @@
       <h2>Game Over!</h2>
       <p id="finalScoreText">Your score: 0</p>
       <button id="restartButton">Play Again</button>
+      <button id="backToHomeFromGameOver" class="start-btn" style="background-color: #6c757d;">Back to Home</button>
     </div>
   </div>
 
@@ -90,6 +90,9 @@
 
   <!-- Game Message -->
   <div id="gameMessage" class="game-message d-none" role="alert"></div>
+  <!-- Exit Button -->
+  <button id="exitButton" class="exit-btn" style="display: none;">Exit Game</button>
+
 
   <script src="sketch.js"></script>
 </body>

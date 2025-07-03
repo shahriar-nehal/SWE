@@ -187,3 +187,24 @@ canvas {
   margin-top: 0;
 }
 
+.exit-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1003;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.exit-btn:hover {
+  background-color: #bb2d3b;
+}
+
+

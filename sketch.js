@@ -85,6 +85,20 @@ function setup() {
       creditModal.style.display = 'none';
     }
   });
+
+  const exitButton = document.getElementById('exitButton');
+  const backToHomeFromGameOver = document.getElementById('backToHomeFromGameOver');
+
+  exitButton.addEventListener('click', () => {
+    endGame();
+  });
+
+  backToHomeFromGameOver.addEventListener('click', () => {
+    document.getElementById('gameOverModal').style.display = 'none';
+    document.getElementById('customStartModal').style.display = 'flex';
+  });
+
+
 }
 
 function startGame() {
@@ -113,9 +127,12 @@ function startGame() {
       endGame();
     }
   }, 1000);
+  document.getElementById('exitButton').style.display = 'block';
 }
 
 function endGame() {
+  document.getElementById('exitButton').style.display = 'none';
+
   clearInterval(moleTimer);
   clearInterval(timerInterval);
   moleVisible = false;
@@ -172,7 +189,7 @@ function draw() {
 
   if (hammerSwinging) {
     let restAngle = 19.6;
-    hammerAngle += (restAngle - hammerAngle) * 0.95;
+    hammerAngle += (restAngle - hammerAngle) * 0.7;
 
     if (abs(hammerAngle - restAngle) < 0.5) {
       hammerAngle = restAngle;
