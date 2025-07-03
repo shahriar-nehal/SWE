@@ -1,5 +1,13 @@
+// Whack-a-Mole Game with Progressive Difficulty
+// Features:
+// - 45 second game duration
+// - Three difficulty levels (easy, medium, hard)
+// - Four mole types (normal, bonus, thief, bomb)
+// - Smooth difficulty progression
+// - One-time difficulty messages
+
 let holes = [];
-let currentHole = -1;
+let currentHoles = []; // Array to track multiple moles
 let moleVisible = false;
 let score = 0;
 let moleTimer;
@@ -7,10 +15,12 @@ let hammerImg;
 let hammerAngle = 19.6;
 let hammerSwinging = false;
 
-let timeLeft = 30;
+let timeLeft = 45; // Game duration set to 45 seconds
 let gameStarted = false;
 let gameOver = false;
 let timerInterval;
+let difficulty = 'easy'; // easy, medium, hard
+let shownDifficultyMessage = false; // Track if difficulty message was shown
 
 let hitSound, missSound, timeoutSound;
 
@@ -19,7 +29,6 @@ const NORMAL_MOLE = 0;
 const BONUS_MOLE = 1;
 const THIEF_MOLE = 2;
 const BOMB_MOLE = 3;
-let currentMoleType = NORMAL_MOLE;
 
 function preload() {
   hammerImg = loadImage('images/hammer2.png');
@@ -58,8 +67,10 @@ function startGame() {
   gameStarted = true;
   gameOver = false;
   score = 0;
-  timeLeft = 30;
-  currentMoleType = NORMAL_MOLE;
+  timeLeft = 45;
+  difficulty = 'easy';
+  shownDifficultyMessage = false;
+  currentHoles = [];
 
   updateScoreDisplay();
   updateTimerDisplay();
@@ -98,6 +109,26 @@ function endGame() {
 
 function updateScoreDisplay() {
   document.getElementById('scoreDisplay').textContent = 'Score: ' + score;
+  
+  // Update difficulty based on score (progressive only - no going back)
+  if (score >= 25 && difficulty !== 'hard') {
+    difficulty = 'hard';
+    shownDifficultyMessage = false; // Reset message flag for new difficulty
+  } else if (score >= 10 && difficulty !== 'medium' && difficulty !== 'hard') {
+    difficulty = 'medium';
+    shownDifficultyMessage = false; // Reset message flag for new difficulty
+  }
+  
+  // Show difficulty message only once when first entering a new difficulty
+  if (!shownDifficultyMessage) {
+    if (difficulty === 'hard') {
+      showGameMessage("HARD MODE!", 'danger', 1500);
+      shownDifficultyMessage = true;
+    } else if (difficulty === 'medium') {
+      showGameMessage("MEDIUM MODE!", 'warning', 1500);
+      shownDifficultyMessage = true;
+    }
+  }
 }
 
 function updateTimerDisplay() {
@@ -107,11 +138,15 @@ function updateTimerDisplay() {
 function draw() {
   drawGrassBackground();
   drawHoles();
-  if (moleVisible) drawMole();
+  if (currentHoles.length > 0) {
+    for (let mole of currentHoles) {
+      drawMole(mole.holeIndex, mole.moleType);
+    }
+  }
 
   if (hammerSwinging) {
     let restAngle = 19.6;
-    hammerAngle += (restAngle - hammerAngle) * 0.95; // faster return
+    hammerAngle += (restAngle - hammerAngle) * 0.95;
 
     if (abs(hammerAngle - restAngle) < 0.5) {
       hammerAngle = restAngle;
@@ -181,28 +216,28 @@ function drawHoles() {
   }
 }
 
-function drawMole() {
-  let hole = holes[currentHole];
+function drawMole(holeIndex, moleType) {
+  let hole = holes[holeIndex];
   let moleSize = min(width, height) / 9;
   let bodyY = hole.y - moleSize / 4;
 
   // Set colors based on mole type
   let bodyColor, outlineColor, earColor;
   
-  switch(currentMoleType) {
+  switch(moleType) {
     case BONUS_MOLE:
-      bodyColor = color(50, 200, 50); // Green
-      outlineColor = color(255); // White
+      bodyColor = color(50, 200, 50);
+      outlineColor = color(255);
       earColor = color(50, 220, 50);
       break;
     case THIEF_MOLE:
-      bodyColor = color(60); // Dark gray
-      outlineColor = color(255); // White
+      bodyColor = color(60);
+      outlineColor = color(255);
       earColor = color(80);
       break;
     case BOMB_MOLE:
-      bodyColor = color(60); // Dark gray
-      outlineColor = color(255, 215, 0); // Gold
+      bodyColor = color(60);
+      outlineColor = color(255, 215, 0);
       earColor = color(80);
       break;
     default: // NORMAL_MOLE
@@ -228,32 +263,32 @@ function drawMole() {
   ellipse(hole.x - earOffsetX, earY, earSize, earSize);
   ellipse(hole.x + earOffsetX, earY, earSize, earSize);
 
-  // Draw inner ears (same for all types)
+  // Draw inner ears
   noStroke();
   fill(205, 133, 63);
   let innerEarSize = earSize / 3;
   ellipse(hole.x - earOffsetX, earY, innerEarSize, innerEarSize);
   ellipse(hole.x + earOffsetX, earY, innerEarSize, innerEarSize);
 
-  // Draw nose (same for all types)
+  // Draw nose
   fill(205, 133, 63);
   ellipse(hole.x, bodyY + moleSize / 6, moleSize / 3.5, moleSize / 5);
 
-  // Draw nose tip (same for all types)
+  // Draw nose tip
   fill(255, 182, 193);
   ellipse(hole.x, bodyY + moleSize / 6, moleSize / 12, moleSize / 12);
 
-  // Draw eyes (same for all types)
+  // Draw eyes
   fill(0);
   ellipse(hole.x - moleSize / 5, bodyY - moleSize / 8, moleSize / 10, moleSize / 10);
   ellipse(hole.x + moleSize / 5, bodyY - moleSize / 8, moleSize / 10, moleSize / 10);
 
-  // Draw mouth (same for all types)
+  // Draw mouth
   fill(210, 180, 140);
   let mouthY = bodyY + moleSize / 4;
   ellipse(hole.x, mouthY, moleSize / 2.8, moleSize / 8);
 
-  // Draw teeth (same for all types)
+  // Draw teeth
   fill(255);
   let toothWidth = moleSize / 28;
   let toothHeight = moleSize / 28;
@@ -261,20 +296,20 @@ function drawMole() {
   rect(hole.x - toothGap, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
   rect(hole.x + toothGap - toothWidth, mouthY + moleSize / 16, toothWidth, toothHeight, 2);
   
-  // Add special indicators for special moles
-  if (currentMoleType !== NORMAL_MOLE) {
+  // Add special indicators
+  if (moleType !== NORMAL_MOLE) {
     textSize(moleSize / 5);
     textAlign(CENTER, CENTER);
     stroke(0);
     strokeWeight(1);
     
-    if (currentMoleType === BONUS_MOLE) {
+    if (moleType === BONUS_MOLE) {
       fill(255);
       text("+3", hole.x, bodyY - moleSize/3);
-    } else if (currentMoleType === THIEF_MOLE) {
+    } else if (moleType === THIEF_MOLE) {
       fill(255);
       text("-2", hole.x, bodyY - moleSize/3);
-    } else if (currentMoleType === BOMB_MOLE) {
+    } else if (moleType === BOMB_MOLE) {
       fill(255, 215, 0);
       text("💣", hole.x, bodyY - moleSize/3);
     }
@@ -282,61 +317,119 @@ function drawMole() {
 }
 
 function moveMole() {
-  currentHole = floor(random(holes.length));
-  moleVisible = true;
+  currentHoles = []; // Clear previous moles
   
-  // Randomly determine mole type (70% normal, 15% bonus, 10% thief, 5% bomb)
-  let moleTypeRoll = random(1);
-  if (moleTypeRoll < 0.7) {
-    currentMoleType = NORMAL_MOLE;
-  } else if (moleTypeRoll < 0.85) {
-    currentMoleType = BONUS_MOLE;
-  } else if (moleTypeRoll < 0.95) {
-    currentMoleType = THIEF_MOLE;
-  } else {
-    currentMoleType = BOMB_MOLE;
+  // Determine how many moles to show based on difficulty
+  let moleCount = 1;
+  if (difficulty === 'medium') {
+    moleCount = random([1, 2]);
+  } else if (difficulty === 'hard') {
+    moleCount = random([2, 3]);
   }
+
+  // Get random unique holes
+  let availableHoles = [...Array(holes.length).keys()];
+  for (let i = 0; i < moleCount; i++) {
+    if (availableHoles.length === 0) break;
+    
+    let randomIndex = floor(random(availableHoles.length));
+    let holeIndex = availableHoles[randomIndex];
+    availableHoles.splice(randomIndex, 1);
+    
+    // Determine mole type based on difficulty and position
+    let moleType = NORMAL_MOLE;
+    let typeRoll = random(1);
+    
+    if (difficulty === 'easy') {
+      if (typeRoll < 0.8) moleType = NORMAL_MOLE;
+      else if (typeRoll < 0.9) moleType = BONUS_MOLE;
+      else moleType = THIEF_MOLE;
+    } 
+    else if (difficulty === 'medium') {
+      if (i === 0) { // First mole in medium
+        if (typeRoll < 0.8) moleType = NORMAL_MOLE;
+        else if (typeRoll < 0.9) moleType = BONUS_MOLE;
+        else moleType = THIEF_MOLE;
+      } else { // Second mole in medium
+        if (typeRoll < 0.2) moleType = NORMAL_MOLE;
+        else if (typeRoll < 0.6) moleType = BONUS_MOLE;
+        else moleType = THIEF_MOLE;
+      }
+    }
+    else if (difficulty === 'hard') {
+      if (i === 0) { // First mole in hard (always normal)
+        moleType = NORMAL_MOLE;
+      } 
+      else if (i === 1) { // Second mole in hard
+        if (typeRoll < 0.4) moleType = BONUS_MOLE;
+        else if (typeRoll < 0.8) moleType = THIEF_MOLE;
+        else moleType = BOMB_MOLE;
+      } 
+      else { // Third mole in hard
+        if (typeRoll < 0.25) moleType = BONUS_MOLE;
+        else if (typeRoll < 0.5) moleType = THIEF_MOLE;
+        else moleType = BOMB_MOLE;
+      }
+    }
+    
+    currentHoles.push({ holeIndex, moleType });
+  }
+  
+  moleVisible = true;
+  setTimeout(() => {
+    moleVisible = false;
+  }, 1500); // Moles stay visible for 1.5 seconds
 }
 
 function mousePressed() {
-  if (!moleVisible || !gameStarted || gameOver) return;
+  if (!moleVisible || !gameStarted || gameOver || currentHoles.length === 0) return;
 
-  let hole = holes[currentHole];
-  let moleSize = min(width, height) / 9;
-  let hitRadius = moleSize * 1.25;
-  let d = dist(mouseX, mouseY, hole.x, hole.y - moleSize / 4);
+  let hitAnyMole = false;
+  
+  // Check all current moles for hits
+  for (let i = currentHoles.length - 1; i >= 0; i--) {
+    let mole = currentHoles[i];
+    let hole = holes[mole.holeIndex];
+    let moleSize = min(width, height) / 9;
+    let hitRadius = moleSize * 1.25;
+    let d = dist(mouseX, mouseY, hole.x, hole.y - moleSize / 4);
 
-  if (d < hitRadius) {
-    hammerAngle = PI / 3;
-    hammerSwinging = true;
-    
-    // Handle different mole types
-    switch(currentMoleType) {
-      case NORMAL_MOLE:
-        score++;
-        hitSound.play();
-        //showGameMessage("+1", 'success', 1000);
-        break;
-      case BONUS_MOLE:
-        score += 3;
-        hitSound.play();
-        showGameMessage("+3 BONUS!", 'success', 1000);
-        break;
-      case THIEF_MOLE:
-        score = max(0, score - 2); // Prevent negative score
-        missSound.play();
-        showGameMessage("2 POINTS STOLEN!", 'danger', 1000);
-        break;
-      case BOMB_MOLE:
-        missSound.play();
-        showGameMessage("BOOM! Game Over", 'danger', 1000);
-        endGame();
-        return;
+    if (d < hitRadius) {
+      hitAnyMole = true;
+      hammerAngle = PI / 3;
+      hammerSwinging = true;
+      
+      // Handle different mole types
+      switch(mole.moleType) {
+        case NORMAL_MOLE:
+          score++;
+          hitSound.play();
+          showGameMessage("+1", 'success', 1000);
+          break;
+        case BONUS_MOLE:
+          score += 3;
+          hitSound.play();
+          showGameMessage("+3 BONUS!", 'success', 1000);
+          break;
+        case THIEF_MOLE:
+          score = max(0, score - 2);
+          missSound.play();
+          showGameMessage("-2 THIEF!", 'danger', 1000);
+          break;
+        case BOMB_MOLE:
+          missSound.play();
+          showGameMessage("BOOM! Game Over", 'danger', 1000);
+          endGame();
+          return;
+      }
+      
+      // Remove the hit mole
+      currentHoles.splice(i, 1);
+      updateScoreDisplay();
     }
-    
-    moleVisible = false;
-    updateScoreDisplay();
-  } else {
+  }
+
+  if (!hitAnyMole) {
     missSound.play();
     hammerAngle = PI / 3;
     hammerSwinging = true;
@@ -344,7 +437,7 @@ function mousePressed() {
 }
 
 function updateTimeBar() {
-  let percentage = (timeLeft / 30) * 100;
+  let percentage = (timeLeft / 45) * 100;
   const bar = document.getElementById('timeBar');
   bar.style.width = percentage + '%';
 
@@ -360,13 +453,13 @@ function updateTimeBar() {
 function showGameMessage(message, alertClass = '', duration = 1000) {
   const messageDiv = document.getElementById('gameMessage');
   messageDiv.textContent = message;
-  messageDiv.className = 'game-message'; // Reset classes
+  messageDiv.className = 'game-message';
   if (alertClass) {
     messageDiv.classList.add(alertClass);
   }
   messageDiv.style.opacity = '1';
   messageDiv.style.animation = 'none';
-  void messageDiv.offsetWidth; // Trigger reflow
+  void messageDiv.offsetWidth;
   messageDiv.style.animation = 'fadeInOut 1s ease-in-out';
 
   if (duration > 0) {
