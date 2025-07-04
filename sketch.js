@@ -117,7 +117,7 @@ function startGame() {
   updateTimeBar();
 
   moveMole();
-  moleTimer = setInterval(moveMole, 2000);
+  moleTimer = setInterval(moveMole, 1000);
 
   timerInterval = setInterval(() => {
     timeLeft--;
@@ -421,7 +421,7 @@ function moveMole() {
   moleVisible = true;
   setTimeout(() => {
     moleVisible = false;
-  }, 1500); // Moles stay visible for 1.5 seconds
+  }, 950); // Moles stay visible for 950ms
 }
 
 function mousePressed() {
