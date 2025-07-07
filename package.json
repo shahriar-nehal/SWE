@@ -1,0 +1,8 @@
+{
+  "name": "whack-a-mole-game",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node test_sketch.js"
+  },
+  "devDependencies": {}
+}
