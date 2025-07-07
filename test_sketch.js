@@ -5,22 +5,35 @@
 function assert(condition, message) {
     if (!condition) {
         console.error(`❌ Test Failed: ${message}`);
-        // To make it fail loudly, throw an error
-        throw new Error(message);
+        throw new Error(message); // Fail loudly
     } else {
         console.log(`✅ Test Passed: ${message}`);
     }
 }
 
 // --- Global Mocks for p5.js Functions and Variables ---
-// This is crucial for running p5.js code in a Node.js environment.
+// These are crucial for running p5.js code in a Node.js environment.
 // Every p5.js global function and variable that sketch.js uses needs a dummy mock.
 
-global.p5 = function(sketch) {}; // Mock the p5 constructor if used
-global.loadImage = (path) => ({ width: 100, height: 100 }); // Dummy image object
-global.loadSound = (path) => ({ play: () => {}, isLoaded: () => true }); // Dummy sound object
+// We need a specific mock for p5 that captures the setup/draw functions
+// when sketch.js is loaded, as p5 normally calls them itself.
+let _p5InstanceSketch; // This will hold the actual sketch function passed to new p5()
+let _p5GlobalSetupCalled = false; // To track if the global setup was triggered
 
-// Core p5.js drawing/setup functions - these will just be empty functions
+global.p5 = function(sketch) {
+    _p5InstanceSketch = sketch; // Capture the sketch function
+    // In global mode, p5 doesn't explicitly pass setup/draw/preload to a sketch function
+    // Instead, it looks for them in the global scope. We will mock that behavior below.
+};
+
+global.preload = function() {}; // Mock preload, can add behavior if needed
+global.draw = function() {};    // Mock draw, can add behavior if needed
+
+// Mock loadImage and loadSound to return simple objects without actual loading
+global.loadImage = (path) => ({ width: 100, height: 100 });
+global.loadSound = (path) => ({ play: () => {}, isLoaded: () => true });
+
+// Core p5.js drawing/setup functions - these will just be empty mocks
 global.createCanvas = (w, h) => { /* console.log(`Mock: createCanvas(${w}, ${h})`); */ };
 global.windowWidth = 800; // Provide dummy dimensions for consistent testing
 global.windowHeight = 600;
@@ -31,8 +44,8 @@ global.strokeWeight = (w) => { /* console.log(`Mock: strokeWeight(${w})`); */ };
 global.fill = (c) => { /* console.log(`Mock: fill(${c})`); */ };
 global.ellipse = (x, y, w, h) => { /* console.log(`Mock: ellipse(${x}, ${y}, ${w}, ${h})`); */ };
 global.line = (x1, y1, x2, y2) => { /* console.log(`Mock: line(${x1}, ${y1}, ${x2}, ${y2})`); */ };
-global.sin = Math.sin; // Math functions are generally fine
-global.frameCount = 0; // Can be incremented if needed for specific tests
+global.sin = Math.sin;
+global.frameCount = 0;
 global.min = Math.min;
 global.width = global.windowWidth; // p5.js global width
 global.height = global.windowHeight; // p5.js global height
@@ -69,38 +82,32 @@ global.setTimeout = (fn, delay) => { fn(); }; // Execute immediately
 // We need to simulate the existence of HTML elements that sketch.js interacts with
 // by providing simple JS objects that mimic their properties/methods.
 
-// This map will hold our mocked DOM elements by ID
-const mockedDomElements = {};
+const mockedDomElements = {}; // Map to hold our mocked DOM elements by ID
 
-// Helper to create or get a mocked element
 function createMockElement(id, initialContent = '') {
     if (mockedDomElements[id]) return mockedDomElements[id];
 
     const element = {
         id: id,
         textContent: initialContent,
-        style: { display: '', width: '', backgroundColor: '', opacity: '', animation: '' }, // Mimic style object
-        classList: { // Mimic classList methods
-            _classes: new Set(), // Internal set to track classes
+        style: { display: '', width: '', backgroundColor: '', opacity: '', animation: '' },
+        classList: {
+            _classes: new Set(),
             add: function(cls) { this._classes.add(cls); },
             remove: function(cls) { this._classes.delete(cls); },
             contains: function(cls) { return this._classes.has(cls); }
         },
-        // Mock addEventListener for buttons
-        _eventListeners: {}, // To store mock event listeners
+        _eventListeners: {},
         addEventListener: function(type, listener) {
             if (!this._eventListeners[type]) this._eventListeners[type] = [];
             this._eventListeners[type].push(listener);
         },
-        // Simulate a click, calling registered listeners
         click: function() {
             if (this._eventListeners['click']) {
-                // Pass a mock event object. `target` is often used by handlers.
                 this._eventListeners['click'].forEach(listener => listener({ target: this }));
             }
         },
-        // For gameMessage
-        offsetWidth: 0 // Mock this property if it's accessed
+        offsetWidth: 0
     };
     mockedDomElements[id] = element;
     return element;
@@ -126,63 +133,42 @@ global.document = {
             case 'scoreDisplay': return createMockElement(id, 'Score: 0');
             case 'gameMessage': return createMockElement(id);
             case 'exitButton': return createMockElement(id);
-            default: return null; // Or throw an error if an unmocked element is accessed
+            default: return null;
         }
     },
-    // Mock `document.body` if your sketch accesses it (e.g., `canvas.parent(document.body)`)
     body: { appendChild: () => {}, style: {} },
-    // Mock global event listeners if your sketch uses them on document
     addEventListener: (type, listener) => {},
     removeEventListener: (type, listener) => {}
 };
 
-// Mock the global window object if your sketch uses window-specific properties/methods
 global.window = {
     addEventListener: (type, listener) => {},
     removeEventListener: (type, listener) => {},
-    // Add other window properties if your sketch uses them (e.g., window.innerWidth)
 };
 
 
 // --- 4. Define Global Game State Variables ---
 // These are the actual global variables from your sketch.js.
 // We declare them here so we can reliably reset them in tests.
-let holes = [];
-let currentHoles = [];
-let score = 0;
-let moleVisible = false;
-let moleTimer;
-let hammerImg;
-let hammerAngle = 45;
-let hammerSwinging = false;
-let timeLeft = 45;
-let gameStarted = false;
-let gameOver = false;
-let timerInterval;
-let difficulty = 'easy';
-let shownDifficultyMessage = false;
-
-// Expose these as global variables for the test context.
-global.holes = holes;
-global.currentHoles = currentHoles;
-global.score = score;
-global.moleVisible = moleVisible;
-global.moleTimer = moleTimer;
-global.hammerImg = hammerImg;
-global.hammerAngle = hammerAngle;
-global.hammerSwinging = hammerSwinging;
-global.timeLeft = timeLeft;
-global.gameStarted = gameStarted;
-global.gameOver = gameOver;
-global.timerInterval = timerInterval;
-global.difficulty = difficulty;
-global.shownDifficultyMessage = shownDifficultyMessage;
+global.holes = [];
+global.currentHoles = [];
+global.score = 0;
+global.moleVisible = false;
+global.moleTimer = null; // Initialize to null
+global.hammerImg = null; // Initialize to null, will be "loaded" by mockLoadImage
+global.hammerAngle = 45;
+global.hammerSwinging = false;
+global.timeLeft = 45;
+global.gameStarted = false;
+global.gameOver = false;
+global.timerInterval = null; // Initialize to null
+global.difficulty = 'easy';
+global.shownDifficultyMessage = false;
 
 // --- 5. Import / Load your actual sketch.js ---
 // This line executes your sketch.js file. As it runs, it will define
 // its global functions (setup, draw, updateScoreDisplay, etc.)
-// and populate the global variables (score, timeLeft, etc.) in THIS
-// test environment's global scope.
+// and populate the global variables in THIS test environment's global scope.
 // It must come *after* all your mocks are defined.
 require('./sketch.js');
 
@@ -206,7 +192,7 @@ global.resetGameState = function() {
     createMockElement('timeBar').style.width = '100%';
     createMockElement('timeBar').style.backgroundColor = '#053b12';
     createMockElement('gameMessage').textContent = '';
-    createMockElement('gameMessage').classList._classes.clear(); // Clear classList's internal state
+    createMockElement('gameMessage').classList._classes.clear();
     createMockElement('gameMessage').style.opacity = '0';
     createMockElement('gameMessage').style.animation = '';
     createMockElement('gameOverModal').style.display = 'none';
@@ -220,15 +206,17 @@ global.resetGameState = function() {
         mockedDomElements[id]._eventListeners = {}; // Reset listeners for each element
     }
 
-    // Call the actual setup() function from sketch.js here.
-    // This will re-initialize your game's state and re-attach event listeners
-    // to the mocked DOM elements for each test.
+    // Explicitly call the `preload` and `setup` functions from `sketch.js`
+    // as p5.js normally does in a browser.
+    if (typeof global.preload === 'function') {
+        global.preload(); // Call the preload function if it exists
+    }
     if (typeof global.setup === 'function') {
-        global.setup();
+        global.setup(); // This is the critical call!
     } else {
-        // This 'else' block should ideally not be reached if sketch.js loaded correctly.
-        console.error("Error: global.setup() function is still not found after loading sketch.js!");
-        throw new Error("Setup function not found for testing."); // Fail the test explicitly
+        // This 'else' block indicates a serious problem if it's still reached.
+        console.error("Error: global.setup() function is STILL not found after loading sketch.js!");
+        throw new Error("Setup function not found for testing."); // Explicitly fail the test
     }
 };
 
