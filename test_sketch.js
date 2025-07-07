@@ -9,13 +9,19 @@ function assert(condition, message) {
   }
 }
 
-// --- Mock p5.js Environment ---
+// --- p5.js Function Mocks ---
 global.windowWidth = 800;
 global.windowHeight = 600;
 global.width = windowWidth;
 global.height = windowHeight;
 
-global.createCanvas = (w, h) => { global.width = w; global.height = h; };
+global.createCanvas = (w, h) => {
+  global.width = w;
+  global.height = h;
+  return {
+    parent: () => {} // ✅ Fix for canvas.parent(document.body)
+  };
+};
 global.noCursor = () => {};
 global.loadImage = (path) => ({ width: 100, height: 100 });
 global.loadSound = () => ({ play: () => {}, isLoaded: () => true });
@@ -51,7 +57,7 @@ global.setInterval = (fn) => { fn(); return 1; };
 global.clearInterval = () => {};
 global.setTimeout = (fn) => { fn(); };
 
-// --- DOM Mocking ---
+// --- DOM Mocks ---
 const dom = {};
 function createMockElement(id) {
   return dom[id] || (dom[id] = {
@@ -83,7 +89,7 @@ global.document = {
 
 global.window = { addEventListener: () => {} };
 
-// --- Global Game State ---
+// --- Game State Mocks ---
 global.holes = [];
 global.currentHoles = [];
 global.score = 0;
@@ -99,7 +105,7 @@ global.timerInterval = null;
 global.difficulty = 'easy';
 global.shownDifficultyMessage = false;
 
-// --- Import Functions from sketch.js ---
+// --- Import from sketch.js ---
 const sketch = require('./sketch.js');
 
 global.preload = sketch.preload;
@@ -112,7 +118,7 @@ global.updateTimerDisplay = sketch.updateTimerDisplay;
 global.moveMole = sketch.moveMole;
 global.mousePressed = sketch.mousePressed;
 
-// --- Helper to Reset State ---
+// --- Reset State Helper ---
 function resetGameState() {
   global.score = 0;
   global.timeLeft = 45;
