@@ -517,12 +517,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     preload,
     setup,
-    draw,
-    startGame,
-    endGame,
-    updateScoreDisplay,
-    updateTimerDisplay,
-    moveMole,
-    mousePressed
+    startGame
   };
 }
+
