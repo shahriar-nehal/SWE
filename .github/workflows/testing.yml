@@ -1,27 +1,47 @@
-name: testing
+# .github/workflows/testing.yml 
+# (Or you can use ci-cd.yml and add a deployment job later)
 
-on:
-  push:
+name: Whack-a-Mole CI Tests # More descriptive name
+
+on:  
+  push:    
+    branches: [ 'main' ]  # Run on pushes to main branch
+    # Consider adding other branches for testing, e.g., 'feature-**'
+  pull_request: # Also good to run tests on pull requests
     branches: [ 'main' ]
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual triggering from GitHub UI
 
-jobs:
-  unit_testing:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get code
-        uses: actions/checkout@v2
-      - name: Look at the files
-        run: |
-          echo $ ls -la 
-          ls -la 
-          echo $ pwd
-          pwd
-      - name: Verify node installation
-        run: |
-          echo "$ node --version"
-          node --version
-      - name: Test parser library
-        run: |
-          echo $ node parser.js        
-          node parser.js
+jobs:  
+  unit_and_lint_testing: # More descriptive job name
+    runs-on: ubuntu-latest # Operating system for the runner
+
+    steps:      
+      - name: Get code        
+        uses: actions/checkout@v4 # Use the latest version of the checkout action
+
+      - name: Set up Node.js environment # Explicitly set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify your desired Node.js version (LTS recommended)
+
+      - name: Install npm dependencies # Crucial step to get Jest, ESLint, Stylelint
+        run: npm install
+
+      - name: Run ESLint (JavaScript Linting) # Check for JS code quality and errors
+        # This assumes you have an ESLint config file (.eslintrc.json)
+        # and a script like "lint:js": "eslint . --ext .js" in package.json
+        run: npm run lint:js 
+
+      - name: Run Stylelint (CSS Linting) # Check for CSS code quality and errors
+        # This assumes you have a Stylelint config file (.stylelintrc.json)
+        # and a script like "lint:css": "stylelint 'style.css'" in package.json
+        run: npm run lint:css
+
+      - name: Run Jest tests (UI & Logic) # Execute your Jest test suite
+        # This assumes you have Jest installed and a script like "test": "jest" in package.json
+        # and your test files (e.g., __tests__/ui.test.js) are configured to run.
+        run: npm test
+
+      # The 'Look at the files', 'Verify node installation', and 'Test parser library'
+      # steps from your original YAML are mostly for debugging or specific scenarios.
+      # The above steps are the standard ones for testing a JavaScript project.
