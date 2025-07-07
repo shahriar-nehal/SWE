@@ -9,7 +9,7 @@ function assert(condition, message) {
   }
 }
 
-// --- Global Mocks for p5.js Functions and Variables ---
+// --- Mock p5.js Environment ---
 global.windowWidth = 800;
 global.windowHeight = 600;
 global.width = windowWidth;
@@ -18,7 +18,7 @@ global.height = windowHeight;
 global.createCanvas = (w, h) => { global.width = w; global.height = h; };
 global.noCursor = () => {};
 global.loadImage = (path) => ({ width: 100, height: 100 });
-global.loadSound = (path) => ({ play: () => {}, isLoaded: () => true });
+global.loadSound = () => ({ play: () => {}, isLoaded: () => true });
 global.imageMode = () => {};
 global.CENTER = 'center';
 global.image = () => {};
@@ -83,7 +83,7 @@ global.document = {
 
 global.window = { addEventListener: () => {} };
 
-// --- Game Variables ---
+// --- Global Game State ---
 global.holes = [];
 global.currentHoles = [];
 global.score = 0;
@@ -99,11 +99,12 @@ global.timerInterval = null;
 global.difficulty = 'easy';
 global.shownDifficultyMessage = false;
 
-// --- Import the sketch.js and bind functions globally ---
+// --- Import Functions from sketch.js ---
 const sketch = require('./sketch.js');
 
-global.setup = sketch.setup;
 global.preload = sketch.preload;
+global.setup = sketch.setup;
+global.draw = sketch.draw;
 global.startGame = sketch.startGame;
 global.endGame = sketch.endGame;
 global.updateScoreDisplay = sketch.updateScoreDisplay;
@@ -111,7 +112,7 @@ global.updateTimerDisplay = sketch.updateTimerDisplay;
 global.moveMole = sketch.moveMole;
 global.mousePressed = sketch.mousePressed;
 
-// --- Test Utilities ---
+// --- Helper to Reset State ---
 function resetGameState() {
   global.score = 0;
   global.timeLeft = 45;
@@ -140,29 +141,28 @@ function resetGameState() {
 }
 
 // --- Tests ---
-
 global.test_startGame_button = function () {
   console.log("\n--- Running test_startGame_button ---");
   resetGameState();
 
   const startModal = createMockElement('customStartModal');
   const startButton = createMockElement('startButton');
-
   startModal.style.display = 'flex';
+
   startButton.click();
 
   assert(global.gameStarted === true, 'Game should be started');
   assert(startModal.style.display === 'none', 'Start modal should be hidden');
   assert(global.score === 0, 'Score should be reset');
   assert(global.timeLeft === 45, 'Time should reset');
-  assert(createMockElement('exitButton').style.display === 'block', 'Exit button shown');
+  assert(createMockElement('exitButton').style.display === 'block', 'Exit button should be shown');
 };
 
 global.test_gameOver_flow = function () {
   console.log("\n--- Running test_gameOver_flow ---");
   resetGameState();
 
-  global.score = 42;
+  global.score = 99;
   global.gameStarted = true;
 
   global.endGame();
@@ -171,12 +171,11 @@ global.test_gameOver_flow = function () {
   const finalScoreText = createMockElement('finalScoreText');
 
   assert(global.gameOver === true, 'Game should be marked as over');
-  assert(gameOverModal.style.display === 'flex', 'Game Over modal shown');
-  assert(finalScoreText.textContent === 'Your score: 42', 'Score shown correctly');
+  assert(gameOverModal.style.display === 'flex', 'Game Over modal should be visible');
+  assert(finalScoreText.textContent === 'Your score: 99', 'Final score text should be set');
 };
 
-// --- Run Tests ---
-
+// --- Run All Tests ---
 try {
   global.test_startGame_button();
   global.test_gameOver_flow();
