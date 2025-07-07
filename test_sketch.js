@@ -9,7 +9,7 @@ function assert(condition, message) {
   }
 }
 
-// --- p5.js Function Mocks ---
+// --- p5.js mocks ---
 global.windowWidth = 800;
 global.windowHeight = 600;
 global.width = windowWidth;
@@ -19,11 +19,12 @@ global.createCanvas = (w, h) => {
   global.width = w;
   global.height = h;
   return {
-    parent: () => {} // ✅ Fix for canvas.parent(document.body)
+    parent: () => {} // ✅ fix for canvas.parent()
   };
 };
+
 global.noCursor = () => {};
-global.loadImage = (path) => ({ width: 100, height: 100 });
+global.loadImage = () => ({ width: 100, height: 100 });
 global.loadSound = () => ({ play: () => {}, isLoaded: () => true });
 global.imageMode = () => {};
 global.CENTER = 'center';
@@ -57,7 +58,7 @@ global.setInterval = (fn) => { fn(); return 1; };
 global.clearInterval = () => {};
 global.setTimeout = (fn) => { fn(); };
 
-// --- DOM Mocks ---
+// --- DOM mocking ---
 const dom = {};
 function createMockElement(id) {
   return dom[id] || (dom[id] = {
@@ -89,7 +90,7 @@ global.document = {
 
 global.window = { addEventListener: () => {} };
 
-// --- Game State Mocks ---
+// --- game state variables ---
 global.holes = [];
 global.currentHoles = [];
 global.score = 0;
@@ -105,7 +106,7 @@ global.timerInterval = null;
 global.difficulty = 'easy';
 global.shownDifficultyMessage = false;
 
-// --- Import from sketch.js ---
+// --- import from sketch.js ---
 const sketch = require('./sketch.js');
 
 global.preload = sketch.preload;
@@ -118,7 +119,7 @@ global.updateTimerDisplay = sketch.updateTimerDisplay;
 global.moveMole = sketch.moveMole;
 global.mousePressed = sketch.mousePressed;
 
-// --- Reset State Helper ---
+// --- helper to reset game state and DOM ---
 function resetGameState() {
   global.score = 0;
   global.timeLeft = 45;
@@ -134,6 +135,15 @@ function resetGameState() {
     'backToHomeButton', 'gameOverModal', 'finalScoreText', 'restartButton',
     'backToHomeFromGameOver', 'timerDisplay', 'timeBar', 'scoreDisplay', 'gameMessage', 'exitButton'
   ];
+
+  // ✅ Step 1: Create all DOM elements before setup()
+  ids.forEach(id => createMockElement(id));
+
+  // ✅ Step 2: preload and setup (now can access the mocked DOM)
+  global.preload();
+  global.setup();
+
+  // ✅ Step 3: reset styles and listeners
   ids.forEach(id => {
     const el = createMockElement(id);
     el.textContent = '';
@@ -141,12 +151,9 @@ function resetGameState() {
     el.classList._set.clear();
     el._eventListeners = {};
   });
-
-  global.preload();
-  global.setup();
 }
 
-// --- Tests ---
+// --- TEST: Start Game Button ---
 global.test_startGame_button = function () {
   console.log("\n--- Running test_startGame_button ---");
   resetGameState();
@@ -164,6 +171,7 @@ global.test_startGame_button = function () {
   assert(createMockElement('exitButton').style.display === 'block', 'Exit button should be shown');
 };
 
+// --- TEST: Game Over Flow ---
 global.test_gameOver_flow = function () {
   console.log("\n--- Running test_gameOver_flow ---");
   resetGameState();
