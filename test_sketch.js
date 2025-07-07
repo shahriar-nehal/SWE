@@ -176,7 +176,18 @@ global.shownDifficultyMessage = shownDifficultyMessage;
 // This is the file you want to test. By using `require`, its global functions
 // (setup, draw, updateScoreDisplay, etc.) and global variables will become
 // available in this test environment.
-require('./sketch.js');
+const sketch = require('./sketch.js');
+
+// Assign globally for testing just like p5 does
+global.preload = sketch.preload;
+global.setup = sketch.setup;
+global.draw = sketch.draw;
+global.startGame = sketch.startGame;
+global.endGame = sketch.endGame;
+global.updateScoreDisplay = sketch.updateScoreDisplay;
+global.updateTimerDisplay = sketch.updateTimerDisplay;
+global.moveMole = sketch.moveMole;
+global.mousePressed = sketch.mousePressed;
 
 // --- 6. Define Your Test Functions (Similar to parser.js) ---
 
