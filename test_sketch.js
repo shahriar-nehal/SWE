@@ -1,103 +1,111 @@
 // test_sketch.js
 
-// --- Basic Assertion Function (from your professor's parser.js) ---
-function assert(condition, message) {
-    if (!condition) {
-        console.error(`❌ Test Failed: ${message}`);
-        // To make it fail loudly, throw an error
-        throw new Error(message);
-    } else {
-        console.log(`✅ Test Passed: ${message}`);
-    }
-}
+// ... (All your assert, p5.js mocks, DOM mocks, and global variable declarations remain the same) ...
 
-// --- Global Mocks for p5.js Functions and Variables ---
-// ... (All the p5.js and DOM mocks as provided in the previous answer) ...
-// IMPORTANT: Copy ALL the global.xxx = ... mocks here.
+// --- 6. Define Your Test Functions (Make them global) ---
 
-// --- 4. Define Global Game State Variables (as they are global in sketch.js) ---
-// ... (All the global.holes = ... etc. assignments from previous answer) ...
+// Replace this:
+// function test_startGame_button() { ... }
+// With this:
+global.test_startGame_button = function() {
+    console.log("\n--- Running test_startGame_button ---");
+    resetGameState(); // Reset state before test
 
-// --- 5. Import / Load your actual sketch.js ---
-// Define a temporary global variable to hold the actual setup function
-// This helps ensure we're calling the one defined by sketch.js
-let actualSketchSetup;
+    const startModal = global.document.getElementById('customStartModal');
+    const startButton = global.document.getElementById('startButton');
 
-// Override global.setup temporarily before loading sketch.js to capture it
-// This allows us to intercept the function sketch.js assigns to global.setup
-// and use it reliably later.
-const originalGlobalSetup = global.setup; // Store current mock/undefined setup
-global.setup = function() {
-    // This function will be called by sketch.js when it initializes.
-    // We capture it, so our tests can call it reliably.
-    actualSketchSetup = arguments.callee; // Capture the function itself
-    if (originalGlobalSetup) originalGlobalSetup.apply(this, arguments); // Call the original mock if it existed
+    assert(startModal.style.display === 'flex', "Start modal should be visible initially.");
+    assert(global.gameStarted === false, "Game should not be started initially.");
+
+    // Simulate click
+    startButton.click();
+
+    assert(startModal.style.display === 'none', "Start modal should be hidden after clicking Start Game.");
+    assert(global.gameStarted === true, "Game should be started after clicking Start Game.");
+    assert(global.score === 0, "Score should be reset to 0 at game start.");
+    assert(global.timeLeft === 45, "Time should be reset to 45 at game start.");
+    assert(global.difficulty === 'easy', "Difficulty should be reset to 'easy' at game start.");
+    assert(global.shownDifficultyMessage === false, "Difficulty message flag should be reset.");
+    assert(createMockElement('exitButton').style.display === 'block', "Exit button should be visible after start.");
 };
 
-require('./sketch.js'); // This line executes sketch.js and assigns its `setup` function to `global.setup`
 
-// After require, `global.setup` now holds the *actual* setup function from sketch.js.
-// We can now safely re-assign actualSketchSetup from global.setup if needed,
-// but since sketch.js runs and directly sets `global.setup`, we can just use `global.setup` directly.
+// Repeat this for ALL your test functions:
+global.test_credit_button_and_back = function() {
+    console.log("\n--- Running test_credit_button_and_back ---");
+    resetGameState(); // Reset state before test
 
-// --- 6. Define Your Test Functions (Similar to parser.js) ---
+    const creditButton = global.document.getElementById('creditButton');
+    const creditModal = global.document.getElementById('creditModal');
+    const startModal = global.document.getElementById('customStartModal');
+    const closeCreditModal = global.document.getElementById('closeCreditModal');
+    const backToHomeButton = global.document.getElementById('backToHomeButton');
 
-// Helper to reset the game state for each test
-function resetGameState() {
-    global.score = 0;
-    global.timeLeft = 45;
-    global.difficulty = 'easy';
-    global.shownDifficultyMessage = false;
-    global.gameStarted = false;
-    global.gameOver = false;
-    global.currentHoles = [];
-    global.moleVisible = false;
+    assert(creditModal.style.display === 'none', "Credit modal should be hidden initially.");
+    assert(startModal.style.display === 'flex', "Start modal should be visible initially for credit test.");
 
-    // Reset mocked DOM elements for a clean state
-    // Reset specific mock values:
-    createMockElement('scoreDisplay').textContent = 'Score: 0';
-    createMockElement('timerDisplay').textContent = 'Time: 45s';
-    createMockElement('timeBar').style.width = '100%';
-    createMockElement('timeBar').style.backgroundColor = '#053b12';
-    createMockElement('gameMessage').textContent = '';
-    // Clear classList's internal state directly
-    createMockElement('gameMessage').classList._classes.clear();
-    createMockElement('gameMessage').style.opacity = '0';
-    createMockElement('gameMessage').style.animation = '';
-    createMockElement('gameOverModal').style.display = 'none';
-    createMockElement('finalScoreText').textContent = '';
-    createMockElement('customStartModal').style.display = 'flex';
-    createMockElement('creditModal').style.display = 'none';
-    createMockElement('exitButton').style.display = 'none';
+    // Test showing credit modal
+    creditButton.click();
+    assert(creditModal.style.display === 'flex', "Credit modal should be visible after clicking Credit button.");
+    assert(startModal.style.display === 'flex', "Start modal should remain visible when credit modal is shown.");
+    assert(global.gameStarted === false, "Game should not start when clicking Credit button.");
 
-    // Clear event listeners on mocked elements for a clean slate
-    for (const id in mockedDomElements) {
-        mockedDomElements[id]._eventListeners = {}; // Reset listeners for each element
-    }
+    // Test closing credit modal
+    closeCreditModal.click();
+    assert(creditModal.style.display === 'none', "Credit modal should be hidden after clicking close button.");
+    assert(startModal.style.display === 'flex', "Start modal should remain visible after closing credit modal.");
+
+    // Test Back to Home from credit modal
+    creditButton.click(); // Re-open credit modal
+    assert(creditModal.style.display === 'flex', "Credit modal re-opened for Back to Home test.");
+    backToHomeButton.click();
+    assert(creditModal.style.display === 'none', "Credit modal should be hidden after clicking Back to Home.");
+    assert(startModal.style.display === 'flex', "Start modal should be visible after clicking Back to Home.");
+};
+
+
+global.test_gameOver_flow = function() {
+    console.log("\n--- Running test_gameOver_flow ---");
+    resetGameState();
+
+    const gameOverModal = global.document.getElementById('gameOverModal');
+    const finalScoreText = global.document.getElementById('finalScoreText');
+    const restartButton = global.document.getElementById('restartButton');
+    const backToHomeFromGameOver = global.document.getElementById('backToHomeFromGameOver');
+
+    global.score = 75; // Set a mock score
+    global.gameStarted = true; // Simulate game in progress
     
-    // Call the actual setup() function from sketch.js here.
-    // It should now be defined correctly in the global scope after `require('./sketch.js')`.
-    if (typeof global.setup === 'function') {
-        global.setup(); // This is the call that was failing
-    } else {
-        // This 'else' block should ideally not be reached after the fix.
-        console.error("Error: global.setup() function is still not found after loading sketch.js!");
-        throw new Error("Setup function not found for testing."); // Fail the test explicitly
-    }
-}
+    // Manually call endGame (which would happen naturally in game logic)
+    global.endGame();
 
+    assert(global.gameOver === true, "Game should be marked as over.");
+    assert(global.gameStarted === false, "Game should be marked as not started.");
+    assert(gameOverModal.style.display === 'flex', "Game Over modal should be visible.");
+    assert(finalScoreText.textContent === 'Your score: 75', "Final score text should be updated.");
+    assert(createMockElement('exitButton').style.display === 'none', "Exit button should be hidden after game over.");
 
-// --- Test Functions (test_startGame_button, test_credit_button_and_back, test_gameOver_flow) ---
-// ... (Keep these functions exactly as they were in the previous answer) ...
+    // Test Restart button
+    restartButton.click();
+    assert(gameOverModal.style.display === 'none', "Game Over modal should be hidden after clicking Restart.");
+    assert(global.gameStarted === true, "Game should restart after clicking Restart.");
 
+    // Test Back to Home from Game Over
+    global.endGame(); // Simulate another game over to get modal back
+    assert(gameOverModal.style.display === 'flex', "Game Over modal re-opened for Back to Home test.");
+    backToHomeFromGameOver.click();
+    assert(gameOverModal.style.display === 'none', "Game Over modal should be hidden after clicking Back to Home.");
+    assert(global.document.getElementById('customStartModal').style.display === 'flex', "Start modal should be visible after Back to Home.");
+    assert(global.gameStarted === false, "Game should not be started after Back to Home.");
+};
 
-// --- Run All Tests ---
+// ... (Your try/catch block remains the same, calling these global functions) ...
 try {
-    test_startGame_button();
-    test_credit_button_and_back();
-    test_gameOver_flow();
+    global.test_startGame_button(); // Call them with global.
+    global.test_credit_button_and_back();
+    global.test_gameOver_flow();
     console.log("\n🥳 All tests passed! 🥳");
 } catch (e) {
     console.error(`\nTest Suite Failed: ${e.message}`);
-    process.exit(1); // Exit with a non-zero code to indicate failure in CI/CD
+    process.exit(1);
 }
