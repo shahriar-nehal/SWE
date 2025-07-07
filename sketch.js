@@ -12,7 +12,7 @@ let moleVisible = false;
 let score = 0;
 let moleTimer;
 let hammerImg;
-let hammerAngle = 45;
+let hammerAngle = 19.6;
 let hammerSwinging = false;
 
 let timeLeft = 45; // Game duration set to 45 seconds
@@ -188,10 +188,10 @@ function draw() {
   }
 
   if (hammerSwinging) {
-    let restAngle = 45; // Rest angle in radians
-    hammerAngle += (restAngle - hammerAngle) * 0.4;
+    let restAngle = 19.6; // Rest angle in radians
+    hammerAngle += (restAngle - hammerAngle) * 0.7;
 
-    if (abs(hammerAngle - restAngle) < 0.00001) {
+    if (abs(hammerAngle - restAngle) < 0.5) {
   hammerAngle = restAngle;
   hammerSwinging = false;
 }
@@ -202,7 +202,7 @@ function draw() {
   translate(mouseX, mouseY);
   rotate(hammerAngle);
   imageMode(CENTER);
-  let hammerScale = min(width, height) / 990;
+  let hammerScale = min(width, height) / 1000;
   image(hammerImg, 0, 0, hammerImg.width * hammerScale, hammerImg.height * hammerScale);
   pop();
 }
