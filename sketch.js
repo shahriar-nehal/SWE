@@ -512,3 +512,17 @@ function showGameMessage(message, alertClass = '', duration = 1000) {
     }, duration);
   }
 }
+
+if (typeof module !== 'undefined') {
+  module.exports = {
+    preload,
+    setup,
+    draw,
+    startGame,
+    endGame,
+    updateScoreDisplay,
+    updateTimerDisplay,
+    moveMole,
+    mousePressed
+  };
+}
