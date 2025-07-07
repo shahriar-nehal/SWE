@@ -458,7 +458,7 @@ function mousePressed() {
         case THIEF_MOLE:
           score = max(0, score - 2);
           hitthiefSound.play();
-          showGameMessage("-2 THIEF!", 'danger', 1000);
+          showGameMessage("-2 STOLEN!", 'danger', 1000);
           break;
         case BOMB_MOLE:
           hitbombSound.play();
