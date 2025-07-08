@@ -1,13 +1,10 @@
-// test_sketch.js
-// COMPLETE FILE - Copy and paste this entire content into your test_sketch.js
-
-// --- Basic Assertion Function (from your professor's parser.js) ---
+// --- Basic Assertion Function ---
 function assert(condition, message) {
     if (!condition) {
-        console.error(`❌ Test Failed: ${message}`);
+        console.error(`Test Failed: ${message}`);
         throw new Error(message); // Fail loudly
     } else {
-        console.log(`✅ Test Passed: ${message}`);
+        console.log(`Test Passed: ${message}`);
     }
 }
 
@@ -369,8 +366,8 @@ try {
     global.test_startGame_button();
     global.test_credit_button_and_back();
     //global.test_gameOver_flow();
-    console.log("\n🥳 All tests passed! 🥳");
+    console.log("\nAll tests passed!");
 } catch (e) {
-    console.error(`\n❌ Test failed: ${e.message}`);
+    console.error(`\nTest failed: ${e.message}`);
     process.exit(1);
 }
