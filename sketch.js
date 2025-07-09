@@ -32,11 +32,11 @@ const BOMB_MOLE = 3;
 
 function preload() {
   hammerImg = loadImage('images/hammer2.png');
-  hitSound = loadSound('sounds/floweyhitsound.mp3');
+  hitSound = loadSound('sounds/normalhit.mp3');
   hitbonusSound = loadSound('sounds/bonus.mp3');
   hitbombSound = loadSound('sounds/dead.mp3');
-  hitthiefSound = loadSound('sounds/woman-slap.mp3');
-  missSound = loadSound('sounds/hit.mp3');
+  hitthiefSound = loadSound('sounds/thief.mp3');
+  missSound = loadSound('sounds/miss.mp3');
   timeoutSound = loadSound('sounds/game-over.mp3');
 }
 
