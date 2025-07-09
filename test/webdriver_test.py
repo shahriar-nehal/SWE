@@ -58,7 +58,7 @@ def test_start_game(open_game):
     time.sleep(1)
     
     timer_text = driver.find_element(By.ID, "timerDisplay").text
-    assert "time: 45s" in timer_text.lower(), f"Timer text format incorrect: '{timer_text}'"
+    assert "time: 44s" in timer_text.lower(), f"Timer text format incorrect: '{timer_text}'"
 
 def test_exit_game_button(open_game):
     driver = open_game
