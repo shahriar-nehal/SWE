@@ -35,8 +35,8 @@ function preload() {
   hitSound = loadSound('sounds/normalhit.mp3');
   hitbonusSound = loadSound('sounds/bonus.mp3');
   hitbombSound = loadSound('sounds/dead.mp3');
-  hitthiefSound = loadSound('sounds/thief.mp3');
-  missSound = loadSound('sounds/miss.mp3');
+  hitthiefSound = loadSound('sounds/miss.mp3');
+  missSound = loadSound('sounds/thief.mp3');
   timeoutSound = loadSound('sounds/game-over.mp3');
 }
 
